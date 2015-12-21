@@ -1,0 +1,19 @@
+dofile("luaa/luaa.lua");
+ 
+var str = "Another ";
+str ..= "Neat" .. " Example";
+print(str);
+
+var tbl = { {"gayo", "fuck", "shit"}, {"derp", "idiot", "whore"} };
+
+foreach(var v in Enumerable(tbl):SelectMany(v => v):ToTable())
+	print(v);
+
+for(var i = 0; i < 12; i++) {
+	var line = "";
+
+	for(var j = 0; j < 24; j++)
+		line ..= (j > i && j-i < 12) ? "a" : " ";
+
+	print(line);
+}

@@ -1,0 +1,52 @@
+/*
+	Main file of LuaAdvanced library.
+*/
+
+#define VERSION 1
+
+if(luaa && luaa.GetVersion() >= VERSION) return;
+
+luaa = { };
+
+dofile("luaa/luaa_objects.lua");
+ 
+function luaa.GetVersion() {
+	return VERSION; 
+}
+
+function luaa.GetType(object) {
+	if(object.GetType)
+		return object:GetType(); 
+	else
+		return type(object);
+}
+
+function luaa.Inherit(classMeta, baseClass) {
+	foreach(var k, v in baseClass)
+		if(k:sub(1, 2) != "__")
+			classMeta[k] = v;
+
+	foreach(var v in baseClass.__baseclasses) 
+		classMeta.__baseclasses[#classMeta.__baseclasses+1] = v;
+
+	classMeta.__baseclasses[#classMeta.__baseclasses+1] = baseClass.__type; 
+}
+
+function luaa.IsSubclassOf(object, type) {
+	var objectType = luaa.GetType(object);
+
+	if(objectType == type)
+		return true;
+
+	foreach(var v in object.__baseclasses)
+		if(v == type)
+			return true;
+
+	return false;
+}
+
+/*
+	Libraries
+*/
+
+dofile("luaa/luaa_enumerable.lua");

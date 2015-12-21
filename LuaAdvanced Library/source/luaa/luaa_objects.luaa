@@ -1,0 +1,14 @@
+/*
+	Object class of LuaAdvanced.
+*/
+
+class LUAA_Object {
+
+	var __type = "Object";
+	var __baseclasses = { };
+
+	function GetType() {
+		return this.__type;
+	}
+
+}

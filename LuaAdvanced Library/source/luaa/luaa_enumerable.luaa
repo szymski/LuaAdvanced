@@ -1,0 +1,192 @@
+/*
+	Enumerable class of LuaAdvanced.
+*/
+
+class Enumerable
+{
+	var _table;
+
+	function Enumerable(tbl) {
+		this._table = tbl;
+	}
+
+	function Where(f) {
+		var tbl = { };
+
+		foreach (var v in this._table) {
+			if (f(v))
+				tbl[#tbl + 1] = v;
+		}
+
+		return Enumerable(tbl);
+	}
+
+	function Select(f) {
+		var tbl = { };
+
+		foreach (var v in this._table) {
+			tbl[#tbl + 1] = f(v);
+		}
+
+		return Enumerable(tbl);
+	}
+
+	function First(f) {
+		foreach (var v in this._table) {
+			if (f(v))
+				return v;
+		}
+	}
+
+	function Any(f) {
+		foreach (var v in this._table) {
+			if (f(v))
+				return true;
+		}
+		return false;
+	}
+
+	function Skip(n) {
+		var tbl = { };
+		var c = 0;
+
+		foreach (var v in this._table) {
+			if (c < n) {
+				c = c + 1; // c++;
+				continue; // FIX THIS
+			}
+			tbl[#tbl + 1] = v;
+		}
+
+		return Enumerable(tbl);
+	}
+
+	function SkipWhile(f) {
+		var tbl = { };
+		var b = false;
+
+		foreach (var v in this._table) {
+			if (!f(v))
+				b = true;
+			if (b)
+				tbl[#tbl + 1] = v;
+		}
+
+		return Enumerable(tbl);
+	}
+
+	function Reverse() {
+		var tbl = { };
+
+		foreach (var v in this._table) {
+			table.insert(tbl, 1, v);
+		}
+
+		return Enumerable(tbl);
+	}
+
+	function Inherit(tbl) {
+		var c = 1;
+
+		foreach (var v in tbl) {
+			if (!this._table[c]) {
+				this._table[c] = v;
+			}
+			c = c + 1; // c++;
+		}
+
+		return Enumerable(tbl);
+	}
+
+	function Merge(tbl) {
+		var c = 1;
+
+		foreach (var v in tbl) {
+			if (v is table && this._table[c] is table) {
+				Enumerable(this._table[c]).Merge(v);
+			} else {
+				this._table[c] = v;
+			}
+			c = c + 1; // c++;
+		}
+
+		return Enumerable(this._table);
+	}
+
+	function Add(tbl) {
+		foreach (var v in tbl) {
+			this._table[#this._table + 1] = v;
+		}
+
+		return Enumerable(this._table);
+	}
+
+	function AddWhile(f) {
+		var tbl = { };
+
+		foreach (var v in this._table) {
+			if (!f(v)) {
+				break;
+			}
+			tbl[#tbl + 1] = v;
+		}
+
+		return Enumerable(tbl);
+	}
+
+	function SelectMany(f) {
+		var tbl = { };
+
+		foreach (var v in this._table) 
+			foreach (var v2 in f(v)) 
+				tbl[#tbl + 1] = v2;
+
+		return Enumerable(tbl);
+	}
+
+	function OrderBy(f) {
+		var tbl = { };
+
+		// Copy the table
+		foreach(var v in this._table)
+			tbl[#tbl+1] = v;
+
+		for(var i = 2; i <= #tbl; i++)
+			if(f(tbl[i]) < f(tbl[i-1])) {
+				var temp = tbl[i-1];
+				tbl[i-1] = tbl[i];
+				tbl[i] = temp;
+				i = 1;
+			} 
+
+		return Enumerable(tbl);
+	}
+
+	function OrderByDescending(f) {
+		var tbl = { };
+
+		// Copy the table
+		foreach(var v in this._table)
+			tbl[#tbl+1] = v;
+
+		for(var i = 2; i <= #tbl; i++)
+			if(f(tbl[i]) > f(tbl[i-1])) {
+				var temp = tbl[i-1];
+				tbl[i-1] = tbl[i];
+				tbl[i] = temp;
+				i = 1;
+			} 
+
+		return Enumerable(tbl);
+	}
+
+	function Count()
+	{
+		return #this._table;
+	}
+
+	function ToTable()
+	{
+		return this._table;
+	}
+}

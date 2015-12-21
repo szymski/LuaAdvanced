@@ -1,0 +1,19 @@
+{
+	"comment": [
+		"--[[",
+		"	%filename%",
+		"	%date% %time%",
+		"",
+		"	This file is a part of LuaAdvanced library.",
+		"	No license yet.",
+		"",
+		"	Compiled using LuaAdvanced",
+		"	This file should not be modified.",
+		"]]"
+	],
+
+	"include_luaa_lib" : false,
+
+	"input_dir": ".",
+	"output_dir": "../output/",
+}
