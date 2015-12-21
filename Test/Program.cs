@@ -54,7 +54,7 @@ namespace Test
 
             new Compiler().Compile(@"
 
-
+this.Inventory:AddSubInventory(TINV_SubInventory(invTbl.Id, invTbl.Width, invTbl.Height));
 
 ".Replace("\r", ""));
             Console.ReadKey();

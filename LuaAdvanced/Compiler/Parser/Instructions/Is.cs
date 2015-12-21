@@ -13,7 +13,7 @@ namespace LuaAdvanced.Compiler.Parser.Instructions
 
         public Is(Instruction expression, string type)
         {
-            if (type == "number" || type == "string" || type == "function")
+            if (type == "number" || type == "string" || type == "function" || type == "table")
                 Inline = $"type({expression.Inline}) == \"{type}\"";
             else
                 Inline = $"luaa.IsSubclassOf({expression.Inline}, \"{type}\")";

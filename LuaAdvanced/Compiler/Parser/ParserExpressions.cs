@@ -212,7 +212,8 @@ namespace LuaAdvanced.Compiler.Parser
 
             while (AcceptSymbol("."))
             {
-                RequireIdentifier("Table index expected");
+                if (!AcceptKeyword("this"))
+                    RequireIdentifier("Table index expected");
                 PrevToken();
                 exp = new Expression($"{exp.Inline}.{Expression9_TableIndexAndCalls().Inline}");
             }
@@ -403,6 +404,8 @@ namespace LuaAdvanced.Compiler.Parser
                 return new Expression(currentToken.Value);
             if (AcceptString())
                 return new Expression($"\"{currentToken.Value}\"");
+            if (AcceptKeyword("this"))
+                return new Expression("self");
             if (AcceptKeyword("null"))
                 return new Expression("nil");
             ThrowException("Value expected.");
@@ -419,7 +422,7 @@ namespace LuaAdvanced.Compiler.Parser
                 return exp;
 
             PrevToken();
-            if (tokenIndex > startIndex && currentToken.Value == ".")
+            if (tokenIndex > startIndex && (currentToken.Value == "." || currentToken.Value == ")"))
             {
                 NextToken();
                 return exp;
