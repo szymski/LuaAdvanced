@@ -134,9 +134,7 @@ namespace LuaAdvancedWatcher
 
             foreach (var file in new DirectoryInfo(dir).EnumerateFiles().Where(f => f.Extension == ".luaa"))
             {
-                MessageBox.Show(file.FullName);
-                var outputFilename = Path.Combine(outputFullPath, file.FullName.Replace(Directory.GetCurrentDirectory(), "").Replace(".luaa", ".lua"));
-                MessageBox.Show(outputFullPath); // TODO: Problems with directory
+                var outputFilename = outputFullPath + "\\" + file.FullName.Replace(Directory.GetCurrentDirectory(), "").Replace(".luaa", ".lua");
 
                 try
                 {
