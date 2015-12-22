@@ -11,11 +11,11 @@ namespace LuaAdvanced.Compiler
     {
         public string Comment { get; set; } = "--[[\n\tCompiled using LuaAdvanced\n\tThis file should not be modified\n]]\n";
 
-        public Compiler()
-        {
-
-        }
-
+        /// <summary>
+        /// Compiles input string and returns the final code.
+        /// </summary>
+        /// <param name="input">LuaAdvanced code</param>
+        /// <returns>Compiled Lua code</returns>
         public string Compile(string input)
         { 
             try
@@ -38,8 +38,6 @@ namespace LuaAdvanced.Compiler
                 Console.WriteLine(e.StackTrace);
                 throw e;
             }
-
-            return "";
         }
     }
 }

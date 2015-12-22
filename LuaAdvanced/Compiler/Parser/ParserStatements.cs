@@ -260,8 +260,10 @@ namespace LuaAdvanced.Compiler.Parser
 
         Instruction Statement85_Class()
         {
+            bool local = AcceptKeyword("local");
+
             if (AcceptKeyword("class"))
-                return Statement_Class();
+                return Statement_Class(local);
 
             return Statement8_NewVariableAssignment();
         }

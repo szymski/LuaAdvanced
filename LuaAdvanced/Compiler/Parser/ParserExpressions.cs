@@ -10,6 +10,10 @@ namespace LuaAdvanced.Compiler.Parser
 {
     partial class Parser
     {
+        /// <summary>
+        /// Parses an expression.
+        /// </summary>
+        /// <returns>Compiled expression.</returns>
         Instruction Expression()
         {
             return Expression1_Ternary_NullPropagation();
@@ -84,7 +88,7 @@ namespace LuaAdvanced.Compiler.Parser
 
         Instruction Expression4_Comparisons()
         {
-            var expr = Expression55_PreOperators();
+            var expr = Expression5_PreOperators();
 
             if (AcceptSymbol("=="))
             {
@@ -103,19 +107,19 @@ namespace LuaAdvanced.Compiler.Parser
             return expr;
         }
 
-        Instruction Expression55_PreOperators()
+        Instruction Expression5_PreOperators()
         {
             int logicalNegations = 0;
             while (AcceptSymbol("!"))
                 logicalNegations++;
 
             if (logicalNegations > 0)
-                return new LogicalNegation(Expression5_AdditionAndSubtraction_StringJoin(), logicalNegations);
+                return new LogicalNegation(Expression6_AdditionAndSubtraction_StringJoin(), logicalNegations);
 
             if (AcceptSymbol("-"))
-                return new Expression($"-{Expression5_AdditionAndSubtraction_StringJoin().Inline}");
+                return new Expression($"-{Expression6_AdditionAndSubtraction_StringJoin().Inline}");
             else if (AcceptSymbol("#"))
-                return new Expression($"#{Expression5_AdditionAndSubtraction_StringJoin().Inline}");
+                return new Expression($"#{Expression6_AdditionAndSubtraction_StringJoin().Inline}");
 
             if (AcceptSymbol("++"))
             {
@@ -130,12 +134,12 @@ namespace LuaAdvanced.Compiler.Parser
                 return exp;
             }
 
-            return Expression5_AdditionAndSubtraction_StringJoin();
+            return Expression6_AdditionAndSubtraction_StringJoin();
         }
 
-        Instruction Expression5_AdditionAndSubtraction_StringJoin()
+        Instruction Expression6_AdditionAndSubtraction_StringJoin()
         {
-            var exp = Expression6_MultiplicationDivisionModulo();
+            var exp = Expression7_MultiplicationDivisionModulo();
 
             while (AcceptSymbol("+", "-", ".."))
             {
@@ -145,9 +149,9 @@ namespace LuaAdvanced.Compiler.Parser
             return exp;
         }
 
-        Instruction Expression6_MultiplicationDivisionModulo()
+        Instruction Expression7_MultiplicationDivisionModulo()
         {
-            var exp = Expression7_Power();
+            var exp = Expression8_Power();
 
             while (AcceptSymbol("*", "/", "%"))
             {
@@ -157,9 +161,9 @@ namespace LuaAdvanced.Compiler.Parser
             return exp;
         }
 
-        Instruction Expression7_Power()
+        Instruction Expression8_Power()
         {
-            var exp = Expression75_AssignmentOperations();
+            var exp = Expression9_AssignmentOperations();
 
             while (AcceptSymbol("^"))
             {
@@ -169,9 +173,9 @@ namespace LuaAdvanced.Compiler.Parser
             return exp;
         }
 
-        Instruction Expression75_AssignmentOperations()
+        Instruction Expression9_AssignmentOperations()
         {
-            var exp = Expression775_Is();
+            var exp = Expression10_Is();
 
             if (AcceptSymbol("++"))
                 statementAfterPreparation.Add(new PreparedInstruction($"{exp.Inline} = {exp.Inline} + 1"));
@@ -193,9 +197,9 @@ namespace LuaAdvanced.Compiler.Parser
             return exp;
         }
 
-        Instruction Expression775_Is()
+        Instruction Expression10_Is()
         {
-            var exp = Expression8_TableIndexPeriod();
+            var exp = Expression11_TableIndexPeriod();
 
             if (AcceptKeyword("is"))
             {
@@ -206,24 +210,24 @@ namespace LuaAdvanced.Compiler.Parser
             return exp;
         }
 
-        Instruction Expression8_TableIndexPeriod()
+        Instruction Expression11_TableIndexPeriod()
         {
-            var exp = Expression9_TableIndexAndCalls();
+            var exp = Expression12_TableIndexAndCalls();
 
             while (AcceptSymbol("."))
             {
                 if (!AcceptKeyword("this"))
                     RequireIdentifier("Table index expected");
                 PrevToken();
-                exp = new Expression($"{exp.Inline}.{Expression9_TableIndexAndCalls().Inline}");
+                exp = new Expression($"{exp.Inline}.{Expression12_TableIndexAndCalls().Inline}");
             }
 
             return exp;
         }
 
-        Instruction Expression9_TableIndexAndCalls()
+        Instruction Expression12_TableIndexAndCalls()
         {
-            var exp = Expression105_AnonymousFunctions();
+            var exp = Expression13_AnonymousFunctions();
 
             while (AcceptSymbol("(", "[", ":"))
             {
@@ -267,7 +271,7 @@ namespace LuaAdvanced.Compiler.Parser
             return exp;
         }
 
-        Instruction Expression105_AnonymousFunctions()
+        Instruction Expression13_AnonymousFunctions()
         {
             if (AcceptIdentifier())
             {
@@ -307,10 +311,10 @@ namespace LuaAdvanced.Compiler.Parser
                 return new AnonymousFunction(paramList, Block(false), false);
             }
 
-            return Expression10_GroupedEquation();
+            return Expression14_GroupedEquation();
         }
 
-        Instruction Expression10_GroupedEquation()
+        Instruction Expression14_GroupedEquation()
         {
             if (AcceptSymbol("("))
             {
@@ -319,10 +323,10 @@ namespace LuaAdvanced.Compiler.Parser
                 return new Expression($"({exp.Inline})");
             }
 
-            return Expression11_Tables();
+            return Expression15_Tables();
         }
 
-        Instruction Expression11_Tables()
+        Instruction Expression15_Tables()
         {
             if (AcceptSymbol("{"))
             {
@@ -367,10 +371,10 @@ namespace LuaAdvanced.Compiler.Parser
                 return new Table(pairs);
             }
 
-            return Expression12_RawValuesAndVariables();
+            return Expression16_RawValuesAndVariables();
         }
 
-        Instruction Expression12_RawValuesAndVariables()
+        Instruction Expression16_RawValuesAndVariables()
         {
             if (AcceptKeyword("true", "false") || AcceptNumber())
                 return new Expression(currentToken.Value);
@@ -398,6 +402,10 @@ namespace LuaAdvanced.Compiler.Parser
             return null;
         }
 
+        /// <summary>
+        /// Compiles single raw value expression.
+        /// </summary>
+        /// <returns>Expression</returns>
         Instruction Expression_RawValue()
         {
             if (AcceptKeyword("true", "false") || AcceptNumber() || AcceptIdentifier())
@@ -408,10 +416,14 @@ namespace LuaAdvanced.Compiler.Parser
                 return new Expression("self");
             if (AcceptKeyword("null"))
                 return new Expression("nil");
+
             ThrowException("Value expected.");
             return null;
         }
 
+        /// <summary>
+        /// Compiles variable or table reference.
+        /// </summary>
         Instruction Expression_VariableOrTableVariable()
         {
             var startIndex = tokenIndex;
@@ -455,6 +467,10 @@ namespace LuaAdvanced.Compiler.Parser
             return new Expression(RequireIdentifier("Function call expected.").Value);
         }
 
+        /// <summary>
+        /// Compiles and returns a list of function call parameters. Parentheses are parsed automatically.
+        /// </summary>
+        /// <returns>List of compiled expressions</returns>
         List<Instruction> Expression_CallParameters()
         {
             RequireSymbol("(");

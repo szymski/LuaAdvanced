@@ -18,7 +18,7 @@ namespace LuaAdvanced.Compiler.Parser
             public Instruction sequence;
         }
 
-        Instruction Statement_Class()
+        Instruction Statement_Class(bool local)
         {
             var name = RequireIdentifier("Class name expected.").Value;
 
@@ -110,7 +110,7 @@ namespace LuaAdvanced.Compiler.Parser
                     ThrowException("Unexpected end of file.");
             }
 
-            return new Class(name, fields, methods, baseClass);
+            return new Class(name, fields, methods, baseClass, local);
         }
     }
 }

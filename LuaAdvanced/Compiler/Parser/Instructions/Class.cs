@@ -34,11 +34,11 @@ namespace LuaAdvanced.Compiler.Parser.Instructions
             return metamethods;
         }
 
-        public Class(string name, Dictionary<string, Instruction> fields, List<Parser.ClassMethod> methods, string baseClass)
+        public Class(string name, Dictionary<string, Instruction> fields, List<Parser.ClassMethod> methods, string baseClass, bool local)
         {
             string codeClassName = $"C{name}";
             string metatable = $@"-- {name} class metatable
-{codeClassName} = {{ }}
+{(local ? "local " : "")}{codeClassName} = {{ }}
 {codeClassName}.__index = {codeClassName}
 {codeClassName}.__type = ""{(name == "LUAA_Object" ? "Object" : name)}""
 {codeClassName}.__baseclasses = {{ }}
