@@ -264,6 +264,8 @@ namespace LuaAdvanced.Compiler.Parser
 
             if (AcceptKeyword("class"))
                 return Statement_Class(local);
+            else if(local)
+                PrevToken();
 
             return Statement8_NewVariableAssignment();
         }
@@ -272,8 +274,6 @@ namespace LuaAdvanced.Compiler.Parser
         {
             if (AcceptKeyword("var"))
             {
-                var startTokenIndex = tokenIndex;
-
                 List<string> varList = new List<string>();
 
                 bool comma = true, any = false;

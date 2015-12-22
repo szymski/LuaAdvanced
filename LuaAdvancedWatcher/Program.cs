@@ -17,6 +17,17 @@ namespace LuaAdvancedWatcher
         static void Main(string[] args)
         {
             var settingsFilename = "";
+#if DEBUG
+            settingsFilename = "Test/.lua_advanced";
+#else
+            if (args.Length == 0)
+            {
+                MessageBox.Show("No file specified. Please open .lua_advanced.json", "LuaAdvanced", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            settingsFilename = args[0];
+#endif
 
             bool createdNew;
             Mutex mutex = new Mutex(true, $"LuaAdvanced_{settingsFilename}", out createdNew);
@@ -31,18 +42,6 @@ namespace LuaAdvancedWatcher
                 FileAssociation.Associate(".lua_advanced", "LUA_ADVANCED", "LuaAdvanced Settings File", "", Application.ExecutablePath);
             }
             catch { }
-
-#if DEBUG
-            settingsFilename = "Test/.lua_advanced";
-#else
-            if (args.Length == 0)
-            {
-                MessageBox.Show("No file specified. Please open .lua_advanced.json", "LuaAdvanced", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            settingsFilename = args[0];
-#endif
 
             if (!File.Exists(settingsFilename))
             {

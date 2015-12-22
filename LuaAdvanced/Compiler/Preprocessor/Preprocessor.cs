@@ -91,7 +91,30 @@ namespace LuaAdvanced.Compiler.Preprocessor
         {
             while (NextChar())
             {
-                // TODO: Line removing while in if
+                // Directives
+                if (AcceptPattern("#"))
+                {
+                    Match m = new Regex(@"\s*#").Match(currentLine);
+
+                    if (m.Success && m.Index == 0)
+                    {
+                        string[] paramList = new Regex(@"\s+").Split(currentLine.Substring(position + 1));
+
+                        if (paramList.Length == 0)
+                            ThrowException("Preprocessor directive name expected.");
+
+                        ParseDirective(paramList[0], paramList.Skip(1).ToArray());
+
+                        inputLines[line] = "";
+                        currentLine = inputLines[line];
+                    }
+                }
+
+                if (ifDef != null && data.replacements.All(r => r.identifier != ifDef))
+                {
+                    inputLines[line] = "";
+                    currentLine = "";
+                }
 
                 // Single-line comments
                 if (AcceptPattern("//"))
@@ -127,25 +150,6 @@ namespace LuaAdvanced.Compiler.Preprocessor
                     }
                     inputLines[line] = currentLine.Substring(position + 1); // BUG: Causes crash at the end of file, when the comment isn't closed
                     currentLine = inputLines[line];
-                }
-
-                // Directives
-                else if (AcceptPattern("#"))
-                {
-                    Match m = new Regex(@"\s*#").Match(currentLine);
-
-                    if (m.Success && m.Index == 0)
-                    {
-                        string[] paramList = new Regex(@"\s+").Split(currentLine.Substring(position + 1));
-
-                        if (paramList.Length == 0)
-                            ThrowException("Preprocessor directive name expected.");
-
-                        ParseDirective(paramList[0], paramList.Skip(1).ToArray());
-
-                        inputLines[line] = "";
-                        currentLine = inputLines[line];
-                    }
                 }
 
                 // Strings
