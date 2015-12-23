@@ -158,12 +158,29 @@ namespace LuaAdvanced.Compiler.Parser
 
             if (AcceptKeyword("return"))
             {
-                if (AcceptSymbol(";"))
-                    return new PreparedInstruction("return");
+                if (AcceptSymbol(";")) // No return values
+                    return new Return();
 
-                var exp = Expression();
+                // Multiple value return
+
+                List<Instruction> valueList = new List<Instruction>();
+
+                bool comma = true, any = false;
+                while (!AcceptSymbol(";"))
+                {
+                    any = true;
+                    if (!comma)
+                        ThrowException("Comma required between return values.");
+                    valueList.Add(Expression());
+                    comma = AcceptSymbol(",");
+                }
+                if (comma && any)
+                    ThrowException("Unexpected comma.");
+
+                PrevToken();
                 RequireSymbol(";");
-                return new PreparedInstruction($"return {exp.Inline}");
+
+                return new Return(valueList);
             }
 
             return Statement6_Switch();

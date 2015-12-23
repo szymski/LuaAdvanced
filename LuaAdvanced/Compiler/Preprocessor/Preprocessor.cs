@@ -110,6 +110,7 @@ namespace LuaAdvanced.Compiler.Preprocessor
                     }
                 }
 
+                // Remove the line if ifDef is active
                 if (ifDef != null && data.replacements.All(r => r.identifier != ifDef))
                 {
                     inputLines[line] = "";

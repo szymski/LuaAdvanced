@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -19,6 +21,7 @@ namespace LuaAdvancedWatcher
             var settingsFilename = "";
 #if DEBUG
             settingsFilename = "Test/.lua_advanced";
+            settingsFilename = @"D:\Program Files\Steam\steamapps\common\GarrysMod\garrysmod\addons\_szymekk_tinv\luaa\.lua_advanced";
 #else
             if (args.Length == 0)
             {
@@ -30,7 +33,7 @@ namespace LuaAdvancedWatcher
 #endif
 
             bool createdNew;
-            Mutex mutex = new Mutex(true, $"LuaAdvanced_{settingsFilename}", out createdNew);
+            Mutex mutex = new Mutex(true, $"LuaAdvanced_{settingsFilename.GetHashCode()}", out createdNew);
             if (!createdNew)
             {
                 MessageBox.Show("LuaAdvanced is already running in this folder.", "LuaAdvanced", MessageBoxButtons.OK, MessageBoxIcon.Error);

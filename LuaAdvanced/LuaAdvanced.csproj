@@ -60,6 +60,7 @@
     <Compile Include="Compiler\Parser\Instructions\Class.cs" />
     <Compile Include="Compiler\Parser\Instructions\Logical\LogicalNegation.cs" />
     <Compile Include="Compiler\Parser\Instructions\Is.cs" />
+    <Compile Include="Compiler\Parser\Instructions\PreparedInstruction - Copy.cs" />
     <Compile Include="Compiler\Parser\Instructions\SelfAssignmentOperation.cs" />
     <Compile Include="Compiler\Parser\Instructions\Table.cs" />
     <Compile Include="Compiler\Parser\Instructions\FunctionCall.cs" />
@@ -70,7 +71,7 @@
     <Compile Include="Compiler\Parser\Instructions\NullPropagation.cs" />
     <Compile Include="Compiler\Parser\Instructions\Ternary.cs" />
     <Compile Include="Compiler\Parser\Instructions\Switch.cs" />
-    <Compile Include="Compiler\Parser\Instructions\Prepared.cs" />
+    <Compile Include="Compiler\Parser\Instructions\Return.cs" />
     <Compile Include="Compiler\Parser\Instructions\Expression.cs" />
     <Compile Include="Compiler\Parser\Instructions\ForEachLoop.cs" />
     <Compile Include="Compiler\Parser\Instructions\If.cs" />

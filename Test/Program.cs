@@ -53,16 +53,6 @@ namespace Test
             WriteLogo(welcome);
 
             new Compiler().Compile(@"
-#define TEST
-
-#if TEST
-Code();
-Code();
-MoreCode(); // With a comment!
-#endif
-
-SuperCode();
-AnotherExtraCode(derp => nope+0x50^^128);
 
 
 ".Replace("\r", ""));

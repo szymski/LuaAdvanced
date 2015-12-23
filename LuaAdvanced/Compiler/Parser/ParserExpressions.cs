@@ -443,7 +443,7 @@ namespace LuaAdvanced.Compiler.Parser
             CancelPreparation();
             tokenIndex = startIndex;
 
-            return new Expression(RequireIdentifier("Variable name expected.").Value);
+            return Expression_RawValue();
         }
 
         Instruction Expression_FunctionCall()
