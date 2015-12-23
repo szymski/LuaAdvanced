@@ -22,6 +22,7 @@ namespace LuaAdvancedWatcher
         string outputFullPath, inputFullPath;
         string comment = "--[[\n\tCompiled using LuaAdvanced\n\tThis file should not be modified\n]]\n";
         bool include_luaa_lib = true;
+        Dictionary<string, string> globalDirectives = new Dictionary<string, string>(); 
 
         public Form1(string settingsFilename)
         {
@@ -75,6 +76,10 @@ namespace LuaAdvancedWatcher
             if (settings.GetValue("include_luaa_lib") != null)
                 include_luaa_lib = settings.Value<bool>("include_luaa_lib");
 
+            if(settings.GetValue("directives") != null)
+                foreach(var dir in (JObject)settings["directives"])
+                    globalDirectives.Add(dir.Key, (string)dir.Value);
+
             if (include_luaa_lib)
                 comment += "\ndofile(\"luaa/luaa.lua\")\n";
 
@@ -92,6 +97,8 @@ namespace LuaAdvancedWatcher
 
         void CreateWatcher()
         {
+            // TODO: Lua file copying
+
             FileSystemWatcher watcher = new FileSystemWatcher(settings.Value<string>("input_dir"));
             watcher.NotifyFilter = NotifyFilters.LastWrite;
             watcher.Filter = "*.luaa";
@@ -102,7 +109,7 @@ namespace LuaAdvancedWatcher
 
             watcher.Changed += (sender, args) =>
             {
-                if (DateTime.Now.Subtract(lastCompile).Seconds < 2)
+                if (DateTime.Now.Subtract(lastCompile).Seconds < 1) // For some reason, without this, file compiled twice after every change
                     return;
 
                 lastCompile = DateTime.Now;
@@ -113,6 +120,13 @@ namespace LuaAdvancedWatcher
                 {
                     Thread.Sleep(100);
                     Compiler compiler = new Compiler();
+
+                    foreach(var d in globalDirectives)
+                        compiler.Directives.Add(d.Key, d.Value);
+
+                    compiler.Directives.Add("FILE_NAME", $"\"{new FileInfo(args.FullPath).Name}\"");
+                    compiler.Directives.Add("LONG_FILE_NAME", $"\"{args.FullPath.Replace(Directory.GetCurrentDirectory(), "")}\"");
+
                     compiler.Comment = PrepareComment(comment, new FileInfo(args.FullPath).Name);
 
                     if (!Directory.Exists(Path.GetDirectoryName(outputFilename)))
@@ -139,6 +153,14 @@ namespace LuaAdvancedWatcher
                 try
                 {
                     Compiler compiler = new Compiler();
+
+                    foreach (var d in globalDirectives)
+                        compiler.Directives.Add(d.Key, d.Value);
+
+                    compiler.Directives.Add("FILE_NAME", $"\"{new FileInfo(file.FullName).Name}\"");
+                    compiler.Directives.Add("LONG_FILE_NAME", $"\"{file.FullName.Replace(Directory.GetCurrentDirectory(), "")}\"");
+
+                    compiler.Comment = PrepareComment(comment, new FileInfo(file.FullName).Name);
 
                     if (!Directory.Exists(Path.GetDirectoryName(outputFilename)))
                         Directory.CreateDirectory(Path.GetDirectoryName(outputFilename));

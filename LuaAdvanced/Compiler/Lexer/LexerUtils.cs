@@ -29,8 +29,23 @@ namespace LuaAdvanced.Compiler.Lexer
 
         Preprocessor.Preprocessor.PreprocessorData preprocessorData;
 
+        Preprocessor.Preprocessor.PreprocessorData.Replacement lineDirective;
+
         public Lexer(string input, Preprocessor.Preprocessor.PreprocessorData preprocessorData)
         {
+            // Directives initialization
+
+            lineDirective = new Preprocessor.Preprocessor.PreprocessorData.Replacement()
+            {
+                line = 0,
+                identifier = "LINE",
+                replacement = "1"
+            };
+
+            preprocessorData.replacements.Add(lineDirective);
+
+            // Preprocessing
+
             inputLines = input.Split('\n');
             this.preprocessorData = preprocessorData;
             Pass();
@@ -52,6 +67,8 @@ namespace LuaAdvanced.Compiler.Lexer
                 currentLine = inputLines[line];
             }
 
+            lineDirective.replacement = (line + 1).ToString();
+
             currentChar = currentLine[position];
             return true;
         }
@@ -67,6 +84,7 @@ namespace LuaAdvanced.Compiler.Lexer
                 return false;
             currentLine = inputLines[line];
             currentChar = currentLine[position];
+            lineDirective.replacement = (line + 1).ToString();
             return true;
         }
 
@@ -76,7 +94,7 @@ namespace LuaAdvanced.Compiler.Lexer
         {
             Match match = null;
             while (!(match = whitespaceRegex.Match(currentLine.Substring(position))).Success)
-               return NextLine(); // Go to next line, if the current one doesn't have any characters
+                return NextLine(); // Go to next line, if the current one doesn't have any characters
             position += match.Index - 1;
             NextChar();
             return true;

@@ -60,7 +60,7 @@
     <Compile Include="Compiler\Parser\Instructions\Class.cs" />
     <Compile Include="Compiler\Parser\Instructions\Logical\LogicalNegation.cs" />
     <Compile Include="Compiler\Parser\Instructions\Is.cs" />
-    <Compile Include="Compiler\Parser\Instructions\PreparedInstruction - Copy.cs" />
+    <Compile Include="Compiler\Parser\Instructions\PreparedInstruction .cs" />
     <Compile Include="Compiler\Parser\Instructions\SelfAssignmentOperation.cs" />
     <Compile Include="Compiler\Parser\Instructions\Table.cs" />
     <Compile Include="Compiler\Parser\Instructions\FunctionCall.cs" />

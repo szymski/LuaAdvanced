@@ -30,8 +30,20 @@ namespace LuaAdvanced.Compiler.Preprocessor
 
         public string output = "";
 
-        public Preprocessor(string input)
+        /// <summary>
+        /// Creates preprocessor and preprocesses the code.
+        /// </summary>
+        /// <param name="input">Code to preprocess</param>
+        /// <param name="directives">Predefined directives</param>
+        public Preprocessor(string input, Dictionary<string, string> directives)
         {
+            data.replacements.AddRange(directives.Select(d => new PreprocessorData.Replacement()
+            {
+                line = 0,
+                identifier = d.Key,
+                replacement = d.Value
+            }));
+
             inputLines = input.Split('\n');
             Pass();
             output = inputLines.Aggregate((i, j) => i + "\n" + j);

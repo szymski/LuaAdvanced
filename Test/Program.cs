@@ -54,7 +54,6 @@ namespace Test
 
             new Compiler().Compile(@"
 
-
 ".Replace("\r", ""));
             Console.ReadKey();
         }
