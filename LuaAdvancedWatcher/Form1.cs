@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -97,11 +98,9 @@ namespace LuaAdvancedWatcher
 
         void CreateWatcher()
         {
-            // TODO: Lua file copying
-
             FileSystemWatcher watcher = new FileSystemWatcher(settings.Value<string>("input_dir"));
             watcher.NotifyFilter = NotifyFilters.LastWrite;
-            watcher.Filter = "*.luaa";
+            watcher.Filter = "*.lua*"; // .luaa and .lua files
             watcher.IncludeSubdirectories = true;
             watcher.EnableRaisingEvents = true;
 
@@ -109,12 +108,22 @@ namespace LuaAdvancedWatcher
 
             watcher.Changed += (sender, args) =>
             {
-                if (DateTime.Now.Subtract(lastCompile).Seconds < 1) // For some reason, without this, file compiled twice after every change
+                if (DateTime.Now.Subtract(lastCompile).Seconds < 1) // For some reason, without this, file compiles twice after every change
                     return;
 
                 lastCompile = DateTime.Now;
 
                 var outputFilename = Path.Combine(outputFullPath, args.FullPath.Replace(Directory.GetCurrentDirectory(), "").Replace(".luaa", ".lua"));
+
+                if (new FileInfo(args.FullPath).Extension == ".lua")
+                {
+                    if (!Directory.Exists(Path.GetDirectoryName(outputFilename)))
+                        Directory.CreateDirectory(Path.GetDirectoryName(outputFilename));
+
+                    File.WriteAllText(outputFilename, File.ReadAllText(args.FullPath));
+
+                    return;
+                }
 
                 try
                 {
@@ -124,15 +133,15 @@ namespace LuaAdvancedWatcher
                     foreach(var d in globalDirectives)
                         compiler.Directives.Add(d.Key, d.Value);
 
-                    compiler.Directives.Add("FILE_NAME", $"\"{new FileInfo(args.FullPath).Name}\"");
-                    compiler.Directives.Add("LONG_FILE_NAME", $"\"{args.FullPath.Replace(Directory.GetCurrentDirectory(), "")}\"");
+                    compiler.Directives.Add("__FILE__", $"\"{new FileInfo(args.FullPath).Name}\"");
+                    compiler.Directives.Add("_LONG_FILE_", $"\"{args.FullPath.Replace(Directory.GetCurrentDirectory(), "")}\"");
 
                     compiler.Comment = PrepareComment(comment, new FileInfo(args.FullPath).Name);
 
                     if (!Directory.Exists(Path.GetDirectoryName(outputFilename)))
                         Directory.CreateDirectory(Path.GetDirectoryName(outputFilename));
 
-                    File.WriteAllText(outputFilename, compiler.Compile(File.ReadAllText(args.FullPath)));
+                    File.WriteAllText(outputFilename, compiler.Compile(File.ReadAllText(args.FullPath).Replace("\r", "")));
                 }
                 catch (CompilerException e)
                 {
@@ -146,9 +155,19 @@ namespace LuaAdvancedWatcher
             if (dir == null)
                 dir = inputFullPath;
 
-            foreach (var file in new DirectoryInfo(dir).EnumerateFiles().Where(f => f.Extension == ".luaa"))
+            foreach (var file in new DirectoryInfo(dir).EnumerateFiles().Where(f => f.Extension == ".luaa" || f.Extension == ".lua"))
             {
                 var outputFilename = outputFullPath + "\\" + file.FullName.Replace(Directory.GetCurrentDirectory(), "").Replace(".luaa", ".lua");
+
+                if (file.Extension == ".lua")
+                {
+                    if (!Directory.Exists(Path.GetDirectoryName(outputFilename)))
+                        Directory.CreateDirectory(Path.GetDirectoryName(outputFilename));
+
+                    File.WriteAllText(outputFilename, File.ReadAllText(file.FullName));
+
+                    return;
+                }
 
                 try
                 {
@@ -157,15 +176,15 @@ namespace LuaAdvancedWatcher
                     foreach (var d in globalDirectives)
                         compiler.Directives.Add(d.Key, d.Value);
 
-                    compiler.Directives.Add("FILE_NAME", $"\"{new FileInfo(file.FullName).Name}\"");
-                    compiler.Directives.Add("LONG_FILE_NAME", $"\"{file.FullName.Replace(Directory.GetCurrentDirectory(), "")}\"");
+                    compiler.Directives.Add("__FILE__", $"\"{new FileInfo(file.FullName).Name}\"");
+                    compiler.Directives.Add("_LONG_FILE_", $"\"{file.FullName.Replace(Directory.GetCurrentDirectory(), "")}\"");
 
                     compiler.Comment = PrepareComment(comment, new FileInfo(file.FullName).Name);
 
                     if (!Directory.Exists(Path.GetDirectoryName(outputFilename)))
                         Directory.CreateDirectory(Path.GetDirectoryName(outputFilename));
 
-                    File.WriteAllText(outputFilename, compiler.Compile(File.ReadAllText(file.FullName)));
+                    File.WriteAllText(outputFilename, compiler.Compile(File.ReadAllText(file.FullName).Replace("\r", "")));
                 }
                 catch (CompilerException e)
                 {

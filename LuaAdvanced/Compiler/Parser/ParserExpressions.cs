@@ -204,7 +204,7 @@ namespace LuaAdvanced.Compiler.Parser
             if (AcceptKeyword("is"))
             {
                 var type = RequireIdentifier("Type name expected.").Value;
-                return new Is(exp, type); // TODO: LuaAdvanced library
+                return new Is(exp, type);
             }
 
             return exp;

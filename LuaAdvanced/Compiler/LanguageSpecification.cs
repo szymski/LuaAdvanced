@@ -40,6 +40,7 @@ namespace LuaAdvanced.Compiler
             { "null", "null" },
 
             { "class", "class" },
+            { "partial", "partial" },
             { "public", "public" },
             { "new", "new" },
             { "is", "is" },

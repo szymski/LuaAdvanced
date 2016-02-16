@@ -278,9 +278,12 @@ namespace LuaAdvanced.Compiler.Parser
         Instruction Statement85_Class()
         {
             bool local = AcceptKeyword("local");
+            bool partial = AcceptKeyword("partial");
 
             if (AcceptKeyword("class"))
-                return Statement_Class(local);
+                return Statement_Class(local, partial);
+            else if (partial)
+                ThrowException("Class keyword expected.");
             else if(local)
                 PrevToken();
 
@@ -380,7 +383,8 @@ namespace LuaAdvanced.Compiler.Parser
         Instruction Statement10_StatementExpressions()
         {
             var startIndex = tokenIndex;
-            var exp = Expression_VariableOrTableVariable();
+            var exp = Expression_VariableOrTableVariable(); // BUG: This catches self assignment operations, when it shouldn't
+            // BUG: It catches just "variable;"
 
             if (AcceptSymbol("++"))
                 exp = new SelfAssignmentOperation(exp, "+", "1");

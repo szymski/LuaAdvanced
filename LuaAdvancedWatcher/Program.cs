@@ -21,7 +21,7 @@ namespace LuaAdvancedWatcher
             var settingsFilename = "";
 #if DEBUG
             settingsFilename = "Test/.lua_advanced";
-            settingsFilename = @"D:\Program Files\Steam\steamapps\common\GarrysMod\garrysmod\addons\_szymekk_tinv\luaa\.lua_advanced";
+            settingsFilename = @"F:\Projects\LuaAdvanced\LuaAdvancedWatcher\bin\Debug\Test\.lua_advanced";
 #else
             if (args.Length == 0)
             {

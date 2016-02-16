@@ -54,6 +54,27 @@ namespace Test
 
             new Compiler().Compile(@"
 
+partial class Dupsko {
+    
+    var gay = 123;
+
+    function Gay() {
+        print(""I am gay func "" .. this.gay);    
+    }
+}
+
+partial class Dupsko {
+    var derp = 666;
+
+    function Derp() {
+        print(""I am derp func "" .. this.derp);  
+    }
+}
+
+var obj = Dupsko();
+obj:Gay();
+obj:Derp();
+
 ".Replace("\r", ""));
             Console.ReadKey();
         }
