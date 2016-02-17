@@ -49,6 +49,9 @@ namespace LuaAdvanced.Compiler.Lexer
                         if (line != lastLine)
                             str += "\\n";
 
+                        if (currentChar == '\\' && NextChar() && currentChar == '"')
+                            str += "\\";
+
                         str += currentChar;
 
                         lastLine = line;
@@ -66,6 +69,8 @@ namespace LuaAdvanced.Compiler.Lexer
                     int startLine = line;
                     while (NextChar() && currentChar != '"')
                     {
+                        if(currentChar == '\\' && NextChar() && currentChar == '"')
+                            str += "\\";
                         str += currentChar;
                     }
                     if (!AcceptPattern("\""))
@@ -113,7 +118,7 @@ namespace LuaAdvanced.Compiler.Lexer
                 else if (AcceptPattern(@"[^a-zA-Z0-9\s]") && LanguageSpecification.IsSymbol(patternMatch.Value))
                     PushToken(TokenType.Symbol, patternMatch.Value);
 
-                // Unknown character or whitespaces - the thing at the top doesn't work properly sometimes
+                // Unknown characters or whitespaces - the thing at the top doesn't work properly sometimes
                 else if (!AcceptPattern(@"\s+"))
                     ThrowException($"Unknown character ({currentChar}).");
             }
